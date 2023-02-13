@@ -1,5 +1,6 @@
 import { Meetup } from "./../@types/api";
 import Card from "@/components/UI/Card";
+import MeetupList from "@/components/meetups/MeetupList";
 
 const DUMMY_MEETUPS: Meetup[] = [
   {
@@ -23,11 +24,7 @@ const DUMMY_MEETUPS: Meetup[] = [
 ];
 
 const HomePage: React.FC = () => {
-  return (
-    <Card>
-      <h1>The Home Page</h1>;
-    </Card>
-  );
+  return <MeetupList meetups={DUMMY_MEETUPS} />;
 };
 
 export default HomePage;
