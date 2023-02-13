@@ -1,8 +1,12 @@
+import { Meetup } from "@/@types/api";
+import NewMeetupForm from "@/components/meetups/MeetupForm";
 
-const MeetUpPage: React.FC = () => {
-  return (
-      <h1>The MeetUpPage Page</h1>
-  );
+const NewMeetupPage: React.FC = () => {
+  const addMeetupHandler = (enteredMeetupData: Meetup) => {
+    console.log(enteredMeetupData);
+  };
+
+  return <NewMeetupForm onAddMeetup={addMeetupHandler} />;
 };
 
-export default MeetUpPage;
+export default NewMeetupPage;
