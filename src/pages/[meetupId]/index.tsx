@@ -1,5 +1,6 @@
 import { Meetup } from "@/@types/api";
 import MeetupDetail from "@/components/meetups/MeetupDetail";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
 const MeetUpDetails: React.FC<{ meetupData: Meetup }> = (props) => {
@@ -41,8 +42,8 @@ export async function getStaticPaths() {
     })),
   };
 }
-export async function getStaticProps(context: any) {
-  const meetupId = context.params.meetupId;
+export const getStaticProps: GetStaticProps = async (context) => {
+  const meetupId = context.params?.meetupId;
 
   const client = new MongoClient(process.env.DB_URI, {
     useNewUrlParser: true,
@@ -71,6 +72,6 @@ export async function getStaticProps(context: any) {
       },
     },
   };
-}
+};
 
 export default MeetUpDetails;
