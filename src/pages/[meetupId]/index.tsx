@@ -1,43 +1,66 @@
+import { Meetup } from "@/@types/api";
 import MeetupDetail from "@/components/meetups/MeetupDetail";
-
-const MeetUpDetails: React.FC = () => {
+const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
+const MeetUpDetails: React.FC<{ meetupData: Meetup }> = (props) => {
   return (
     <MeetupDetail
-      title="This is a first meetup"
-      image="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Bosphorus_Bridge_%28235499411%29.jpeg/1920px-Bosphorus_Bridge_%28235499411%29.jpeg"
-      address="This is a first, amazing meetup which you definitely should not miss. It will be a lot of fun!"
+      title={props.meetupData.title}
+      image={props.meetupData.image}
+      address={props.meetupData.address}
+      description={props.meetupData.description}
     />
   );
 };
 
 export async function getStaticPaths() {
+  const client = new MongoClient(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  });
+
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
+  client.close();
+
   return {
     fallback: false,
-    paths: [
-      {
-        params: { meetupId: "m1" },
-      },
-      {
-        params: { meetupId: "m2" },
-      },
-    ],
+    paths: meetups.map((meetup: any) => ({
+      params: { meetupId: meetup._id.toString() },
+    })),
   };
 }
 export async function getStaticProps(context: any) {
-  //fetch data for a single meetup
-
   const meetupId = context.params.meetupId;
+
+  const client = new MongoClient(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  });
+
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const selectedMeetup = await meetupsCollection.findOne({
+    _id: new ObjectId(meetupId),
+  });
+
+  client.close();
 
   return {
     props: {
       meetupData: {
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Bosphorus_Bridge_%28235499411%29.jpeg/1920px-Bosphorus_Bridge_%28235499411%29.jpeg",
-        id: "m1",
-        title: "This is a first meetup",
-        address:
-          "This is a first, amazing meetup which you definitely should not miss. It will be a lot of fun!",
-        description: "This is a first meetup",
+        id: selectedMeetup._id.toString(),
+        title: selectedMeetup.title,
+        image: selectedMeetup.image,
+        address: selectedMeetup.address,
+        description: selectedMeetup.description,
       },
     },
   };

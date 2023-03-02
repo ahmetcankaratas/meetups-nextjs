@@ -1,26 +1,7 @@
-import { Meetup, Meetups } from "./../@types/api";
+import { Meetup, MeetupResponse, Meetups } from "./../@types/api";
 import MeetupList from "@/components/meetups/MeetupList";
 
-const DUMMY_MEETUPS: Meetup[] = [
-  {
-    id: "m1",
-    title: "This is a first meetup",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Bosphorus_Bridge_%28235499411%29.jpeg/1920px-Bosphorus_Bridge_%28235499411%29.jpeg",
-    address: "Some address 5, 12345 Some City",
-    description:
-      "This is a first, amazing meetup which you definitely should not miss. It will be a lot of fun!",
-  },
-  {
-    id: "m2",
-    title: "This is a second meetup",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Bosphorus_Bridge_%28235499411%29.jpeg/1920px-Bosphorus_Bridge_%28235499411%29.jpeg",
-    address: "Some address 5, 12345 Some City",
-    description:
-      "This is a second, amazing meetup which you definitely should not miss. It will be a lot of fun!",
-  },
-];
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const HomePage: React.FC<Meetups> = (props) => {
   return <MeetupList meetups={props.meetups} />;
@@ -40,9 +21,26 @@ const HomePage: React.FC<Meetups> = (props) => {
 
 export async function getStaticProps() {
   // fetch data from an API
+  const client = new MongoClient(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  });
+
+  const db = client.db();
+
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find().toArray();
+
   return {
     props: {
-      meetups: DUMMY_MEETUPS,
+      meetups: meetups.map((meetup: MeetupResponse) => ({
+        title: meetup.title,
+        address: meetup.address,
+        image: meetup.image,
+        id: meetup._id.toString(),
+      })),
     },
     revalidate: 10,
   };

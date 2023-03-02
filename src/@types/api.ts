@@ -6,6 +6,13 @@ export type Meetup = {
   description?: string;
 };
 
+export type MeetupResponse = {
+  _id: string;
+  title: string;
+  image: string;
+  address: string;
+};
+
 export type Meetups = {
   meetups: Meetup[];
 };
