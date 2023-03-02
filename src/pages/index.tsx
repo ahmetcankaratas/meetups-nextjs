@@ -1,10 +1,19 @@
-import { Meetup, MeetupResponse, Meetups } from "./../@types/api";
+import { MeetupResponse, Meetups } from "./../@types/api";
 import MeetupList from "@/components/meetups/MeetupList";
+import Head from "next/head";
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const HomePage: React.FC<Meetups> = (props) => {
-  return <MeetupList meetups={props.meetups} />;
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta name="description" content="Browse a huge list of highly active React meetups!" />
+      </Head>
+      <MeetupList meetups={props.meetups} />;
+    </>
+  );
 };
 
 // export async function getServerSideProps(context: any) {
